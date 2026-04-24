@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
-# ===== Load model =====
+# Load model
 model = joblib.load('bmw_model.pkl')
 scaler = joblib.load('bmw_scaler.pkl')
 X_test = joblib.load('X_test.pkl')
@@ -32,19 +32,19 @@ def predict():
 
         prediction = model.predict(input_scaled)[0]
 
+        # Plot
         plt.figure()
         plt.scatter(X_test, y_test, label="Actual")
         plt.scatter(X_test, model.predict(X_test), label="Predicted")
         plt.scatter(input_scaled[0][0], prediction, s=100, label="Your Prediction")
 
-        plt.legend()
         plt.xlabel("Dealership Count (scaled)")
         plt.ylabel("Units Sold")
+        plt.legend()
 
         plt.savefig('static/plot.png')
         plt.close()
 
-        # ✅ THIS WAS MISSING
         return render_template(
             'index.html',
             prediction_text=f'Predicted Units Sold: {prediction:.2f}'
