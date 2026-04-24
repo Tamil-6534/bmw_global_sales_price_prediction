@@ -20,7 +20,6 @@ def home():
 @app.route('/predict', methods=['POST'])
 def predict():
     try:
-        # ===== Get input =====
         dealership_count = request.form.get('dealership_count')
 
         if dealership_count is None or dealership_count == "":
@@ -28,36 +27,34 @@ def predict():
 
         dealership_count = float(dealership_count)
 
-        # ===== Preprocess =====
         input_data = np.array([[dealership_count]])
         input_scaled = scaler.transform(input_data)
 
-        # ===== Predict =====
         prediction = model.predict(input_scaled)[0]
 
-        # ===== Plot =====
         plt.figure()
-
         plt.scatter(X_test, y_test, label="Actual")
         plt.scatter(X_test, model.predict(X_test), label="Predicted")
-
-        # 🔥 Important fix
         plt.scatter(input_scaled[0][0], prediction, s=100, label="Your Prediction")
 
+        plt.legend()
         plt.xlabel("Dealership Count (scaled)")
         plt.ylabel("Units Sold")
-        plt.legend()
 
-        # ===== Save plot =====
-        plt.savefig('static/plot.png')  # ⚠️ static folder must exist
+        plt.savefig('static/plot.png')
         plt.close()
 
+        # ✅ THIS WAS MISSING
+        return render_template(
+            'index.html',
+            prediction_text=f'Predicted Units Sold: {prediction:.2f}'
+        )
 
     except Exception as e:
         print("ERROR:", e)
         return render_template(
             'index.html',
-            prediction_text=f'Predicted Units Sold: {prediction:.2f}'
+            prediction_text=f'Error: {str(e)}'
         )
 
 
