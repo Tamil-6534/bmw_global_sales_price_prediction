@@ -8,8 +8,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error
 
 # ===== Load dataset =====
-data = pd.read_csv(r'F:\projects\bmw prediction\bmw_global_sales_dataset.csv')
-
+data = pd.read_csv('bmw_global_sales_dataset.csv')
 # ===== Features & target =====
 X = data[['dealership_count']]
 y = data['units_sold']
