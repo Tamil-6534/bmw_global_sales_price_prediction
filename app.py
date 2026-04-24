@@ -1,13 +1,18 @@
 from flask import Flask, render_template, request
 import numpy as np
 import joblib
+import matplotlib
+
+# 🔥 IMPORTANT for Render (no GUI environment)
+matplotlib.use('Agg')
+
 import matplotlib.pyplot as plt
 
 app = Flask(__name__)
 
-# ===== Load model =====
-model = joblib.load('bmw_model.pkl')
-scaler = joblib.load('bmw_scaler.pkl')
+# ===== Load model files =====
+model = joblib.load('model.pkl')        # ⚠️ Make sure names match your repo
+scaler = joblib.load('scaler.pkl')
 X_test = joblib.load('X_test.pkl')
 y_test = joblib.load('y_test.pkl')
 
@@ -41,7 +46,7 @@ def predict():
         plt.scatter(X_test, y_test, label="Actual")
         plt.scatter(X_test, model.predict(X_test), label="Predicted")
 
-        # 🔥 Important fix
+        # User input point
         plt.scatter(input_scaled[0][0], prediction, s=100, label="Your Prediction")
 
         plt.xlabel("Dealership Count (scaled)")
@@ -49,16 +54,17 @@ def predict():
         plt.legend()
 
         # ===== Save plot =====
-        plt.savefig('static/plot.png')  # ⚠️ static folder must exist
+        plt.savefig('static/plot.png')
         plt.close()
 
-
-    except Exception as e:
-        print("ERROR:", e)
         return render_template(
             'index.html',
             prediction_text=f'Predicted Units Sold: {prediction:.2f}'
         )
+
+    except Exception as e:
+        # 🔥 Show real error in browser (for debugging)
+        return f"Error: {str(e)}"
 
 
 if __name__ == "__main__":
